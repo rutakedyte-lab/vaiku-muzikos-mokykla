@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLessons } from '../hooks/useLessons';
 import { useAuth } from '../context/AuthContext';
 import { saveVideo, getVideo, deleteVideo } from '../utils/videoStorage';
@@ -10,11 +10,7 @@ const LessonVideo = ({ lesson, onClose }) => {
   const { isAdmin } = useAuth();
   const { updateLessonVideo } = useLessons();
 
-  useEffect(() => {
-    loadVideo();
-  }, [lesson]);
-
-  const loadVideo = async () => {
+  const loadVideo = useCallback(async () => {
     if (lesson.video_path && lesson.video_path.startsWith('local://')) {
       const videoId = lesson.video_path.replace('local://', '');
       const videoData = await getVideo(videoId);
@@ -24,7 +20,11 @@ const LessonVideo = ({ lesson, onClose }) => {
     } else if (lesson.video_path) {
       setVideoUrl(lesson.video_path);
     }
-  };
+  }, [lesson]);
+
+  useEffect(() => {
+    loadVideo();
+  }, [loadVideo]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];

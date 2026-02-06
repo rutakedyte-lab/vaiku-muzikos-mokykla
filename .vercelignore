@@ -1,0 +1,13 @@
+# Nenaudoti Vercel build'e
+backend/
+node_modules/
+frontend/node_modules/
+.env
+.env.*
+*.log
+.DS_Store
+.cursor/
+*.pdf
+test.js
+supabase.js
+index.js

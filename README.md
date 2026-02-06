@@ -180,3 +180,41 @@ Projektas naudoja InstantDB su React integracija. Įsitikinkite, kad:
 1. InstantDB aplikacija sukurta su teisingu APP_ID
 2. Schema sukonfigūruota InstantDB dashboard
 3. Demo vartotojai sukurti `users` lentelėje
+
+## Diegimas į Vercel
+
+Projektas paruoštas Vercel diegimui. Repozitorijoje yra `vercel.json`.
+
+### 1. Per Vercel svetainę (rekomenduojama)
+
+1. Eikite į [vercel.com](https://vercel.com) ir prisijunkite.
+2. Spustelėkite **Add New** → **Project**.
+3. **Import Git Repository** – prijunkite savo GitHub/GitLab/Bitbucket repozitoriją (pirmiausia įkelkite projektą į Git: `git init`, pridėkite failus, sukurkite repo ir nuspushinkite).
+4. Vercel automatiškai aptiks `vercel.json`. **Root Directory** palikite tuščią (projektas diegiamas iš šaknies).
+5. Spustelėkite **Deploy**. Build komanda: `npm run build`, išvestis: `frontend/build`.
+
+### 2. Per Vercel CLI (terminalas)
+
+1. Įdiekite Vercel CLI (jei dar neturite):
+   ```bash
+   npm i -g vercel
+   ```
+2. Projekto šaknyje paleiskite:
+   ```bash
+   cd "/Users/ruta/Documents/Vibe C/3 paskaita/Vaikų muzikos mokykla"
+   vercel
+   ```
+3. Pirmą kartą atsakykite į klausimus (login, project name). Vercel sukurs projektą ir pateiks nuorodą (pvz. `https://vaiku-muzikos-mokykla.vercel.app`).
+
+### Esamam Vercel projektui
+
+Jei projektas jau sukurtas Vercel (pvz. `vaiku-muzikos-mokykla.vercel.app`):
+
+1. **Settings** → **General**: **Root Directory** turi būti tuščias (ne `frontend`).
+2. **Settings** → **Build & Development**: naudojami `vercel.json` nustatymai (Build Command: `npm run build`, Output: `frontend/build`, Install: `npm run install-all`). Jei reikia, perrašykite rankiniu būdu.
+3. Nuspushinkite pakeitimus į GitHub – Vercel automatiškai perdiegs, jei repo prijungtas.
+
+### Pastaba
+
+- Jei naudojate Git: po `git push` Vercel gali automatiškai perdiegti projektą (jei įjungtas auto-deploy).
+- React Router maršrutai veiks dėl `vercel.json` nustatymo `rewrites` → `/index.html`.
