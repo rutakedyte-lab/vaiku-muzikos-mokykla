@@ -6,8 +6,9 @@ Interaktyvus web projektas Vilniaus Broniaus Jonušo Muzikos Mokyklai, skirtas i
 
 - **Frontend**: React + Tailwind CSS
 - **Database**: InstantDB (React integration)
-- **Authentication**: LocalStorage-based (admin/viewer roles)
+- **Authentication**: LocalStorage-based (admin/viewer roles) + Magic Code + Google OAuth
 - **Video Storage**: IndexedDB (local browser storage)
+- **YouTube API**: Rekomenduojami video pagal instrumentą (neprivaloma)
 
 ## Funkcionalumai
 
@@ -46,7 +47,26 @@ cd frontend
 npm install
 ```
 
-### 2. Sukurkite InstantDB schemą
+### 2. Sukonfigūruokite YouTube API (neprivaloma)
+
+Home puslapyje rodomi rekomenduojami YouTube video pagal instrumentą. Norint, kad ši funkcija veiktų:
+
+1. **Gaukite nemokamą YouTube API rakto:**
+   - Eikite į [Google Cloud Console](https://console.cloud.google.com/)
+   - Sukurkite naują projektą arba pasirinkite esamą
+   - Eikite į **APIs & Services** → **Library**
+   - Ieškokite **"YouTube Data API v3"** ir įjunkite
+   - Eikite į **Credentials** → **Create Credentials** → **API Key**
+   - Nukopijuokite API raktą
+
+2. **Pridėkite API raktą:**
+   - Sukurkite failą `frontend/.env` (nepridėkite į Git!)
+   - Įdėkite: `REACT_APP_YOUTUBE_API_KEY=your_api_key_here`
+   - Arba Vercel: **Settings** → **Environment Variables** → pridėkite `REACT_APP_YOUTUBE_API_KEY`
+
+**Pastaba:** Jei API raktas nepridėtas, Home puslapyje tiesiog nerodomi rekomenduojami video (funkcija neveikia, bet aplikacija veikia).
+
+### 3. Sukurkite InstantDB schemą
 
 InstantDB duomenų bazėje sukurkite šias lenteles:
 
@@ -88,7 +108,7 @@ InstantDB duomenų bazėje sukurkite šias lenteles:
 - Admin: `username: 'admin'`, `password: 'admin123'`, `role: 'admin'`
 - Viewer: `username: 'viewer'`, `password: 'viewer123'`, `role: 'viewer'`
 
-### 3. Paleiskite projektą
+### 4. Paleiskite projektą
 
 ```bash
 # Root level
