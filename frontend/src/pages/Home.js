@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTeachers } from '../hooks/useTeachers';
 import { programs } from '../data/programs';
 import InstrumentGuessGame from '../components/InstrumentGuessGame';
+import InstrumentArtists from '../components/InstrumentArtists';
 
 const Home = () => {
   const { teachers, isLoading: teachersLoading } = useTeachers();
@@ -87,7 +88,8 @@ const Home = () => {
                 className="bg-white rounded-lg shadow-md p-4 border border-gray-100"
               >
                 <h3 className="font-medium text-brand-blue-1 mb-1">{prog.name}</h3>
-                <p className="text-sm text-gray-600">{prog.description}</p>
+                <p className="text-sm text-gray-600 mb-2">{prog.description}</p>
+                <InstrumentArtists instrumentName={prog.name} />
               </div>
             ))}
           </div>
