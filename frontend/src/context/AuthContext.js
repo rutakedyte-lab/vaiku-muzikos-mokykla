@@ -197,6 +197,65 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      if (!db.auth || !db.auth.signInWithGoogle) {
+        return {
+          success: false,
+          error: 'Google prisijungimas neprieinamas. Patikrinkite InstantDB Auth nustatymus.',
+        };
+      }
+
+      const result = await db.auth.signInWithGoogle();
+
+      if (result && result.user) {
+        // Get user role from InstantDB users table
+        let userRole = 'viewer'; // default
+        try {
+          if (db.query) {
+            const userResult = await db.query({
+              users: {
+                $: {
+                  where: {
+                    email: { $eq: result.user.email },
+                  },
+                },
+              },
+            });
+            const usersData = userResult?.data?.users || userResult?.users || [];
+            if (usersData.length > 0) {
+              userRole = usersData[0].role || 'viewer';
+            }
+          }
+        } catch (roleError) {
+          console.warn('Could not fetch user role:', roleError);
+        }
+
+        const userData = {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.name,
+          role: userRole,
+        };
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true };
+      }
+
+      return {
+        success: false,
+        error: 'Google prisijungimas nepavyko',
+      };
+    } catch (error) {
+      console.error('Google login error:', error);
+      return {
+        success: false,
+        error: error.message || 'Klaida prisijungiant su Google',
+      };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -214,6 +273,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         sendMagicCode,
         loginWithMagicCode,
+        loginWithGoogle,
         isAdmin,
         isViewer,
       }}
