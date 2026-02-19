@@ -116,6 +116,87 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const sendMagicCode = async (email) => {
+    try {
+      if (!db.auth || !db.auth.sendMagicCode) {
+        return {
+          success: false,
+          error: 'Magic code autentifikacija neprieinama. Patikrinkite InstantDB Auth nustatymus.',
+        };
+      }
+
+      await db.auth.sendMagicCode({ email });
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending magic code:', error);
+      return {
+        success: false,
+        error: error.message || 'Klaida siunčiant kodą el. paštu',
+      };
+    }
+  };
+
+  const loginWithMagicCode = async (email, code) => {
+    try {
+      if (!db.auth || !db.auth.signInWithMagicCode) {
+        return {
+          success: false,
+          error: 'Magic code autentifikacija neprieinama. Patikrinkite InstantDB Auth nustatymus.',
+        };
+      }
+
+      const result = await db.auth.signInWithMagicCode({
+        email,
+        code,
+      });
+
+      if (result && result.user) {
+        // Get user role from InstantDB users table
+        let userRole = 'viewer'; // default
+        try {
+          if (db.query) {
+            const userResult = await db.query({
+              users: {
+                $: {
+                  where: {
+                    email: { $eq: email },
+                  },
+                },
+              },
+            });
+            const usersData = userResult?.data?.users || userResult?.users || [];
+            if (usersData.length > 0) {
+              userRole = usersData[0].role || 'viewer';
+            }
+          }
+        } catch (roleError) {
+          console.warn('Could not fetch user role:', roleError);
+        }
+
+        const userData = {
+          id: result.user.id,
+          email: result.user.email || email,
+          role: userRole,
+        };
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true };
+      }
+
+      return {
+        success: false,
+        error: 'Neteisingas kodas',
+      };
+    } catch (error) {
+      console.error('Magic code login error:', error);
+      return {
+        success: false,
+        error: error.message || 'Neteisingas kodas arba klaida prisijungiant',
+      };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -131,6 +212,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        sendMagicCode,
+        loginWithMagicCode,
         isAdmin,
         isViewer,
       }}
